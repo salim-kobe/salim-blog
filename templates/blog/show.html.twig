@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<article>
+    <h2>{{ article.title }}</h2>
+    <div class="metadata">Ecrit le {{ article.createdAt | date('d/m/Y') }} à 
+    {{ article.createdAt | date('H:i') }} dans la catégorie {{ article.category.title }}</div>
+    <div class="content">
+        <img src="{{ article.image }}" alt="">
+        {{ article.content | raw }}
+        <a href="{{ path('blog_edit', {'id': article.id}) }}" class="btn btn-primary">Modifier l'article</a>
+    </div>
+</article>
+
+<section class="commentaires"> 
+    <h2>{{ article.comments | length }} commentaires : </h2>
+    {% for comment in article.comments %}    
+    <div class="commentaire">
+        <div class="row">
+            <div class="col-3">
+            {{ comment.author }} (<small>{{ comment.createdAt | date('d/m/Y à H:i') }}</small>)
+            </div>
+            <div class="col">
+            {{ comment.content | raw }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if app.user %}
+    <h3> Ajouter un commentaire </h3>
+    {{ form_start(commentForm) }}
+
+    {{ form_row(commentForm.author, {'label': 'Nom d\'utilisateur', 'attr': 
+    {'placeholder' : "Votre nom"}}) }}
+    {{ form_row(commentForm.content, {'label': 'Commentaire', 'attr': 
+    {'placeholder' : "Votre commentaire"}}) }}
+
+    <button type="submit" class="btn btn-primary">Envoyer</button>
+    {{ form_end(commentForm) }}
+
+    {% else %}
+        <h4>Vous ne pouvez pas commenter si vous n'êtes pas connecté</h4>
+        <a href="{{ path('security_login') }}" class="btn btn-success">Connexion</a>
+    {% endif %}
+</section> 
+
+{% endblock %}
